@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 
 from django.utils import simplejson
 from django.views import generic
+
+import requests
 
 from api import models
 from api import utils
@@ -48,7 +51,7 @@ class EventsView(generic.View):
         # Convert the timestamp to datetime
         try:
             event_date = float(event_date)
-        except:
+        except ValueError:
             utils.log('View error: event_date is invalid')
             return HttpResponseBadRequest()
 
@@ -137,3 +140,32 @@ class AttendanceView(generic.View):
             attendance.save()
 
         return HttpResponseNoContent()
+
+
+class VenuesView(generic.View):
+    """Venue listing view."""
+    def get(self, request):
+        lat = request.GET.get('lat')
+        lng = request.GET.get('lng')
+        search_query = request.GET.get('q') 
+
+        if utils.validate_args([lat, lng, search_query]):
+            utils.log('View error: missing args')
+            return HttpResponseBadRequest()
+
+        try:
+            lat, lng = float(lat), float(lng)
+        except ValueError:
+            utils.log('View error: coords data is invalid')
+            return HttpResponseBadRequest()
+
+        url = 'https://api.foursquare.com/v2/venues/search' 
+        params = {}
+        params['client_id'] = settings.CLIENT_ID
+        params['client_secret'] = settings.CLIENT_SECRET 
+        params['ll'] = '%f,%f'  % (lat, lng)
+        params['v'] = settings.FQ_VERSION
+        params['query'] = search_query
+
+        response = requests.get(url, params=params)
+        return JsonResponse(response.json())

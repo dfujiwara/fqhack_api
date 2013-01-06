@@ -22,4 +22,7 @@ urlpatterns = patterns('',
     url(r'^event/(\d+)/$', views.EventView.as_view()),
     url(r'^event/(\d+)/comment/$', views.CommentView.as_view()),
     url(r'^event/(\d+)/attendance/$', views.AttendanceView.as_view()),
+
+    # Class based views with foursquare interaction
+    url(r'^venues/$', views.VenuesView.as_view()),
 )
