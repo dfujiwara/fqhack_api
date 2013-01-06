@@ -30,7 +30,7 @@ class Event(models.Model):
         (SCOPE_PUBLIC, 'Public'),
         (SCOPE_PRIVATE, 'Private')
     )
-    scope = models.SmallIntegerField()
+    scope = models.SmallIntegerField(choices=SCOPE_CHOICES)
 
     def __unicode__(self):
         return u'%s_%d' % (self.title, self.venue_id)
@@ -58,7 +58,12 @@ class Attendance(models.Model):
         (ATTENDING, 'Attending'),
         (NOT_ATTENDING, 'Not attending')
     )
-    attendance = models.SmallIntegerField()
+    attendance = models.SmallIntegerField(choices=ATTENDANCE_CHOICES)
+
+    def __unicode__(self):
+        return u'Attendance status of % d by %s' % (
+            self.attendance, 
+            self.user.full_name())
 
     class Meta:
         unique_together = ('event', 'user') 

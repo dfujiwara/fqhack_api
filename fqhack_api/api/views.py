@@ -31,6 +31,10 @@ class EventsView(generic.View):
         event_content_list = [utils.event_to_dict(e) for e in events]
         return JsonResponse(event_content_list)
 
+    def post(self, request):
+        """Creates an event.""" 
+        pass
+
 
 class EventView(generic.View):
     """Single event view."""
@@ -44,18 +48,18 @@ class EventView(generic.View):
    
         event_content = utils.event_to_dict(event)
  
-        # Can we do reverse look up here?
         comments = models.Comment.objects.filter(
             event__id=event.id).select_related('user')
         comment_content_list = [utils.comment_to_dict(c) for c in comments]
 
-        response_content = {'event': event_content,
-                            'comments': comment_content_list}
-        return JsonResponse(response_content)
+        attendees = models.Attendance.objects.filter(
+            event__id=event.id).select_related('user')
+        attendee_list = [utils.attendance_to_dict(a) for a in attendees]
 
-    def post(self, request):
-        """Creates an event.""" 
-        pass
+        response_content = {'event': event_content,
+                            'comments': comment_content_list,
+                            'attendees': attendee_list}
+        return JsonResponse(response_content)
 
 
 class CommentView(generic.View):

@@ -20,7 +20,6 @@ urlpatterns = patterns('',
     # Class based views.
     url(r'^events/', views.EventsView.as_view()),
     url(r'^event/(\d+)/$', views.EventView.as_view()),
-    url(r'^event/$', views.EventView.as_view()),
     url(r'^event/(\d+)/comment/$', views.CommentView.as_view()),
     url(r'^event/(\d+)/attendance/$', views.AttendanceView.as_view()),
 )
