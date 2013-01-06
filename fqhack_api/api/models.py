@@ -7,8 +7,11 @@ class APIUser(models.Model):
     user = models.ForeignKey(auth_models.User, unique=True)
     token = models.CharField(max_length=100)
 
-    def __uniocode__(self):
-        return u'%s %s' % (self.user.first_name, self.user.last_name)
+    def full_name(self):
+        return '%s %s' % (self.user.first_name, self.user.last_name)
+    def __unicode__(self):
+        return u'user_%d (%s)' % (self.id, 
+                                  self.full_name())
 
 
 class Event(models.Model):
@@ -29,6 +32,9 @@ class Event(models.Model):
     )
     scope = models.SmallIntegerField()
 
+    def __unicode__(self):
+        return u'%s_%d' % (self.title, self.venue_id)
+
 
 class Comment(models.Model):
     """Comment model associated with specific user and event."""
@@ -37,6 +43,9 @@ class Comment(models.Model):
     comment = models.TextField()
     creation_date = models.DateTimeField(auto_now_add=True)
 
+    def __unicode__(self):
+        return u'Event %d by %s' % (self.event_id, 
+                                    self.user.full_name())
 
 class Attendance(models.Model):
     """Attendance model associated with specific user and event."""

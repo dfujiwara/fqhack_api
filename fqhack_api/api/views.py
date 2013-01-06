@@ -1,5 +1,3 @@
-# Create your views here.
-
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 
@@ -7,6 +5,7 @@ from django.utils import simplejson
 from django.views import generic
 
 from api import models
+from api import utils
 
 
 class JsonResponse(HttpResponse):
@@ -21,14 +20,6 @@ class HttpResponseNoContent(HttpResponse):
     status_code = 204
 
 
-def validate_args(args):
-    """Returns True or False based on whether all args were provided."""
-    # Check if all required args are provided.
-    args_list = [event_id, user_id, comment]
-    filtered_args = filter(None, args_list)
-    return len(args_list) != len(filtered_args)
-
-
 def healthz(request):
     return HttpResponse("OK")
 
@@ -37,8 +28,8 @@ class EventsView(generic.View):
     """Event listing view."""
     def get(self, request):
         events = models.Event.objects.all()
-        events_content = {}
-        return JsonResponse(events_content)
+        event_content_list = [utils.event_to_dict(e) for e in events]
+        return JsonResponse(event_content_list)
 
 
 class EventView(generic.View):
@@ -46,20 +37,20 @@ class EventView(generic.View):
     def get(self, request, event_id):
         """Gets the event detail."""
         try:
-            event = models.Event.objects.get(id=event_id)
+            event = models.Event.objects.select_related('organizer').get(
+                id=event_id)
         except models.Event.DoesNotExist:
             return HttpResponseBadRequest()
    
-        event_content = {}
-
+        event_content = utils.event_to_dict(event)
+ 
         # Can we do reverse look up here?
         comments = models.Comment.objects.filter(
             event__id=event.id).select_related('user')
-
-        comment_content = []
+        comment_content_list = [utils.comment_to_dict(c) for c in comments]
 
         response_content = {'event': event_content,
-                            'comments': comment_content}
+                            'comments': comment_content_list}
         return JsonResponse(response_content)
 
     def post(self, request):
