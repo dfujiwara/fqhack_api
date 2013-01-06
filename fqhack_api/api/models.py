@@ -17,7 +17,7 @@ class APIUser(models.Model):
 class Event(models.Model):
     """Event model."""
     # The venue id should be the fq venue id
-    venue_id = models.IntegerField(unique=True)
+    venue_id = models.IntegerField()
     title = models.CharField(max_length=250)
     event_date = models.DateTimeField()
     event_description = models.TextField()

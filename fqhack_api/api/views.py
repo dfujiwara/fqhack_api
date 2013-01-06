@@ -33,7 +33,35 @@ class EventsView(generic.View):
 
     def post(self, request):
         """Creates an event.""" 
-        pass
+        user_id = request.user_id
+        venue_id = request.POST.get('venue_id')
+        title = request.POST.get('title')
+        event_date = request.POST.get('event_date')
+        event_description = request.POST.get('event_description')
+        scope = request.POST.get('scope', models.Event.SCOPE_PUBLIC)
+
+        if utils.validate_args([user_id, venue_id, title,
+                                event_date, event_description, scope]):
+            utils.log('View error: missing args')
+            return HttpResponseBadRequest()
+
+        # Convert the timestamp to datetime
+        try:
+            event_date = float(event_date)
+        except:
+            utils.log('View error: event_date is invalid')
+            return HttpResponseBadRequest()
+
+        event_date = utils.get_datetime(event_date)
+
+        models.Event.objects.create(organizer_id=user_id,
+                                    venue_id=venue_id,
+                                    title=title,
+                                    event_date=event_date,
+                                    event_description=event_description,
+                                    scope=scope)
+        return HttpResponseNoContent()
+        
 
 
 class EventView(generic.View):

@@ -1,6 +1,9 @@
 """Middlewares for the api app."""
 
+import traceback
+
 from api import utils
+
 
 class RequestUserInformationMiddleware:
     def process_request(self, request):
@@ -17,4 +20,5 @@ class RequestUserInformationMiddleware:
 
 class ErrorLoggerMiddleware:
     def process_exception(self, request, exception):
-        utils.log('API Exception: %s' % exception) 
+        tb = traceback.format_exc()
+        utils.log('API Exception: %s: %s' % (exception, tb)) 

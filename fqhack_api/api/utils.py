@@ -1,3 +1,4 @@
+import datetime
 import time
 
 from api import models
@@ -6,9 +7,12 @@ def log(log_message):
     print(log_message)
 
 
-def get_timestamp(datetime):
-    # Note that the datetime objects are converted to timestamp
-    return time.mktime(datetime.timetuple())
+def get_timestamp(dt):
+    return time.mktime(dt.timetuple())
+
+
+def get_datetime(timestamp):
+    return datetime.datetime.fromtimestamp(timestamp) 
 
 
 def validate_args(arg_list):
