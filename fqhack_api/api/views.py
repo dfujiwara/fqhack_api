@@ -65,14 +65,15 @@ class EventView(generic.View):
 class CommentView(generic.View):
     """Comment view."""
     def post(self, request, event_id):
-        user_id = request.POST.get('user_id')
+        user_id = request.user_id
         comment = request.POST.get('comment')
 
-        if validate_args([event_id, user_id, comment]):
+        if utils.validate_args([event_id, user_id, comment]):
+            utils.log('View error: missing args')
             return HttpResponseBadRequest()
         
         # Create the comment object.
-        models.Comment.objects.create(event__id=event_id, user__id=user_id, 
+        models.Comment.objects.create(event_id=event_id, user_id=user_id, 
                                       comment=comment)
         return HttpResponseNoContent()
         
@@ -80,10 +81,11 @@ class CommentView(generic.View):
 class AttendanceView(generic.View):
     """Attendance view."""
     def post(self, request, event_id):
-        user_id = request.POST.get('user_id')
+        user_id = request.user_id
         attendance_flag = request.POST.get('attendance')
 
-        if validate_args([event_id, user_id, attendance_flag]):
+        if utils.validate_args([event_id, user_id, attendance_flag]):
+            utils.log('View error: missing args')
             return HttpResponseBadRequest()
 
         try:
@@ -98,8 +100,8 @@ class AttendanceView(generic.View):
         attendance, created = models.Attendance.objects.get_or_create(
             event__id=event_id,
             user__id=user_id,
-            default={'event__id': event_id, 
-                     'user__id': user_id,
+            defaults={'event_id': event_id, 
+                     'user_id': user_id,
                      'attendance': attendance_flag})
 
         if not created:

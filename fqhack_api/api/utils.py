@@ -2,18 +2,20 @@ import time
 
 from api import models
 
+def log(log_message):
+    print(log_message)
+
 
 def get_timestamp(datetime):
     # Note that the datetime objects are converted to timestamp
     return time.mktime(datetime.timetuple())
 
 
-def validate_args(args):
+def validate_args(arg_list):
     """Returns True or False based on whether all args were provided."""
     # Check if all required args are provided.
-    args_list = [event_id, user_id, comment]
-    filtered_args = filter(None, args_list)
-    return len(args_list) != len(filtered_args)
+    filtered_arg_list = filter(None, arg_list)
+    return len(arg_list) != len(filtered_arg_list)
 
 
 def user_to_dict(user):
