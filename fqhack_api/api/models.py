@@ -17,7 +17,7 @@ class APIUser(models.Model):
 class Event(models.Model):
     """Event model."""
     # The venue id should be the fq venue id
-    venue_id = models.IntegerField()
+    venue_id = models.CharField(max_length=200)
     title = models.CharField(max_length=250)
     event_date = models.DateTimeField()
     event_description = models.TextField()
@@ -33,7 +33,7 @@ class Event(models.Model):
     scope = models.SmallIntegerField(choices=SCOPE_CHOICES)
 
     def __unicode__(self):
-        return u'%s_%d' % (self.title, self.venue_id)
+        return u'%s_%s' % (self.title, self.venue_id)
 
 
 class Comment(models.Model):

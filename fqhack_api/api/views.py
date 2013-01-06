@@ -66,7 +66,6 @@ class EventsView(generic.View):
         return HttpResponseNoContent()
         
 
-
 class EventView(generic.View):
     """Single event view."""
     def get(self, request, event_id):
@@ -167,5 +166,7 @@ class VenuesView(generic.View):
         params['v'] = settings.FQ_VERSION
         params['query'] = search_query
 
-        response = requests.get(url, params=params)
-        return JsonResponse(response.json())
+        fq_response = requests.get(url, params=params)
+        json_response = fq_response.json()
+        response = [utils.venue_to_dict(v) for v in json_response['response']['venues']]
+        return JsonResponse(response)
